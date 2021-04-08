@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -pedantic -ansi
 OBJ = map.o main.o 
-EXEC = game.exe
+EXEC = game
 
 $(EXEC) : $(OBJ)
 	$(CC) $(OBJ) -o $(EXEC)

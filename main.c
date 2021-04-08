@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include "map.h"
 int main() {
-    char** b = generateMap(10,10);
-    fillMap(b,10,10);
-    displayMap(b,10,10);
+    int x = 4;
+    int y = 5;
+    char** b = generateMap(x,y);
+    fillMap(b,x,y);
+    displayMap(b,x,y);
     freeMap(b,10);
     return 0;
 }
-
