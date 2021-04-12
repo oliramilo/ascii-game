@@ -1,55 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-void displayMap(char** map,int x,int y) {
+
+void display_map(char** map,int x,int y) {
     int i;
-    int j;
-    for(i=0;i<y+2;i++) {
-        for(j=0;j<x+2;j++) {
-            printf("%c",map[j][i]);
-        }
-        printf("\n");
+    char* wall = (char*)malloc(sizeof(char) * x+2);
+    memset(wall,'*',x+2);
+    printf("%s\n",wall);
+    for(i=0;i<y;i++) {
+        printf("*%s*\n",map[i]);
     }
+    printf("%s\n",wall);
+    free(wall);
 }
 
-char** generateMap(int x,int y) {
-    int sizeX = x+2;
-    int sizeY = y+2;
+char** generate_map(int size_x,int size_y) {
     int i;
-    char** map = (char**)malloc(sizeof(char*) * sizeX);
-    for(i=0;i<sizeY;i++) {
-        map[i] = (char*)malloc(sizeof(char)* sizeY);
+    char** map = (char**)malloc(sizeof(char*) * size_x);
+    for(i=0;i<size_y;i++) {
+        char* line = (char*)malloc(sizeof(char)* size_x);
+        memset(line,' ',size_x);
+        map[i] = line;
     }
-
     return map;
 }
 
-void fillMap(char** map,int x,int y) {
+void free_map(char** map,int y) {
     int i;
-    int j;
-    int ii;
-    int jj;
-    for(i=0;i<x+2;i++) {
-        map[0][i] = '*';
-    }
-    for(ii=0;ii<y+2;ii++) {
-        for(jj=1;jj<x+2;jj++) {
-            if(jj == 0 || jj == x+1) {
-                map[jj][ii] = '*';
-            }
-            else {
-                map[jj][ii] = ' ';
-            }
-        }
-    }
-    for(j=0;j<x+2;j++) {
-        map[y+1][j] = '*';  
-    }
-}
-
-void freeMap(char** map,int x) {
-    int i=0;
-    for(;i<x+2;i++){
+    for(i=0;i<y;i++){
         free(map[i]);
     }
     free(map);
