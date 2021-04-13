@@ -2,14 +2,17 @@
 #include <stdlib.h>
 #include "controller.h"
 
+int player_x,player_y;
 void create_player(int* x,int* y) {
     x = (int*)malloc(sizeof(int));
     y = (int*)malloc(sizeof(int));
+    x = &player_x;
+    y = &player_y;
 }
 
-void change_direction(char* direction, char new_direction) {
+void change_direction(char** map,int x,int y,char* direction, char new_direction) {
     if(new_direction == *direction) {
-        update_position();
+        update_position(map,x,y);
     }
     if(check_direction(direction,new_direction)) {
         update_direction(direction,new_direction);
@@ -30,15 +33,7 @@ void update_position(char** map,int new_x,int new_y) {
     }
 }
 
-
-int get_x() {
-    return *x;
-}
-
-int get_x() {
-    return *y;
-}
-
-char get_direction() {
-    return *direction;
+void free_player(int* x,int* y){
+    free(x);
+    free(y);
 }

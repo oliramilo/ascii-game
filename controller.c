@@ -18,6 +18,10 @@ char get_player_input() {
     return direction;
 }
 
+int move_player(char** map,int *x,int *y,char* direction,char new_direction) {
+    change_direction(map,x,y,direction,new_direction);
+}
+
 
 int check_bounds(int x,int y,int size_x,int size_y){
     int bool = (x >= 0 && x <= size_x && y >= 0 && y <= size_y) ? TRUE : FALSE;
