@@ -6,14 +6,17 @@ static char EAST = 'D';
 static char NORTH = 'W';
 static char SOUTH = 'S';
 static char SHOOT = 'F';
-void get_player_movement() {
+static char UNKNOWN = 'U';
+
+
+char get_player_input() {
     char direction;
     scanf("%c",direction);
-    if(check_direction(direction)) {
-
+    if(!check_direction(direction)) {
+        direction = UNKNOWN;
     }
+    return direction;
 }
-
 
 
 int check_bounds(int x,int y,int size_x,int size_y){
