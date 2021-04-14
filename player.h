@@ -1,7 +1,11 @@
 #ifndef PLAYER_H
-#define PLAYER_H 1
+#define PLAYER_H
 int get_direction();
-void update_position(int,int);
-void change_direction(char);
-void free_player(int*,int*);
+void delta_player(int*,int*,char);
+void update_position(char**,int*,int*,int,int,int*);
+char get_character(char);
+/**char get_character_direction(char);**/
+void change_direction(char**,int*,int*,char*,int*,char);
+void set_character_direction(char*,char);
+void free_player(int*,int*,char*);
 #endif

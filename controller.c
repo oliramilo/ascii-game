@@ -1,44 +1,41 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "controller.h"
+#include "player.h"
 #include "boolean.h"
-static char WEST = 'L';
-static char EAST = 'D';
-static char NORTH = 'W';
-static char SOUTH = 'S';
-static char SHOOT = 'F';
-static char UNKNOWN = 'U';
+#include "direction.h"
 
 
 char get_player_input() {
-    char direction;
-    scanf("%c",direction);
-    if(!check_direction(direction)) {
-        direction = UNKNOWN;
+    char command = ' ';
+    scanf(" %c",&command);
+    return command;
+}
+
+void move_player(char** map,int* x,int* y,char* direction,int* dimensions,char new_direction) {
+    change_direction(map,x,y,direction,dimensions,new_direction);
+}
+
+int check_bounds(int x,int y,int* dimensions,char** map){
+    int bool = FALSE;
+    if( (y >= 0 && y <= dimensions[1]) &&
+        (x >= 0 && x<= dimensions[0])) {
+        bool = TRUE;
     }
-    return direction;
-}
-
-int move_player(char** map,int *x,int *y,char* direction,char new_direction) {
-    change_direction(map,x,y,direction,new_direction);
-}
-
-
-int check_bounds(int x,int y,int size_x,int size_y){
-    int bool = (x >= 0 && x <= size_x && y >= 0 && y <= size_y) ? TRUE : FALSE;
     return bool;
 }
 
 
+
 int check_direction(char direction) {
     int bool = FALSE;
-    switch(direction) {
-        case WEST:
-        case EAST:
-        case NORTH:
-        case SOUTH:
-        case SHOOT:
-            bool = TRUE;
-            break;
+    if(direction == SHOOT) {
+        /**Do nothing**/
     }
+    else if(direction == WEST || direction == EAST || direction == NORTH || direction == SOUTH) {
+        bool = TRUE;
+    }
+
     return bool;
 }

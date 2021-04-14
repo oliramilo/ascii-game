@@ -6,48 +6,72 @@
 #include "boolean.h"
 #include "controller.h"
 #include "player.h"
+#include "direction.h"
+#include "newSleep.h"
 
-int size_x,size_y;
-int* player_x;
-int* player_y;
-char* player_direction;
-char** map;
+void game_func(char**,int*,int*,char*,int*);
+int process_action(char**,int*,int*,int*,char*);
 
-int game_func();
-void process_action(char);
 int main(int argc, char** argv) {
-
+    char* player_direction;
+    int* dimensions;
+    char** map;
     int x = 5;
     int y = 5;
-    create_player(player_x,player_y);
-    char** b = generate_map(x,y);
-    display_map(b,x,y);
-    free_map(b,5);
+    int* player_x = 0;
+    int* player_y = 0;
+    int p_x,p_y;
+    player_direction = (char*)malloc(sizeof(char));
+    dimensions = (int*)malloc(sizeof(int) * 2);
+    player_x = (int*)malloc(sizeof(int));
+    player_y = (int*)malloc(sizeof(int));
+    dimensions[0] = x;
+    dimensions[1] = y;
+    player_x = &p_y;
+    player_y = &p_x;
+    *player_x = 0;
+    *player_y = 0;
+    *player_direction = '>';
+
+    map = generate_map(x,y);
+    map[*player_y][*player_x] = *player_direction;
+    game_func(map,player_x,player_y,player_direction,dimensions);
+    free_map(map,y);
+    free_player(player_x,player_y,player_direction);
+    free(dimensions);
+
     return 0;
 }
 
 
-int game_func() {
-    char command;
-    int player_win = FALSE;
+void game_func(char** map,int* player_x,int* player_y,char* direction,int* dimensions) {
+    int game_won = FALSE;
     int game_loop = TRUE;
+    printf("Dimensions of the map is [%d][%d]\n", dimensions[0],dimensions[1]);
     while(game_loop) {
-        command = get_player_input();
-        process_action();
+        display_map(map,dimensions[1],0);
+        display_commands();
+        game_won = process_action(map,dimensions,player_x,player_y,direction);
+        if(game_won) {
+            game_loop = FALSE;
+        }
     }
-    return player_win;
 }
 
-void process_action(char command) {
-    switch(command) {
-        case WEST:
-        case EAST:
-        case NORTH:
-        case SOUTH:
-            move_player(map,player_x,player_y,player_direction,command);
-            break;
-        case SHOOT:
-            shooting_animation(map,size_x,size_y);
-            break;
+int process_action(char** map,int* dimensions,int* x,int* y, char* direction) {
+    int win_condition = FALSE;
+    char command = get_player_input();
+    command = (command >= 97 && command <= 122) ? command - 32 : command;
+    newSleep(0.5);
+    if( command == WEST || command == EAST || command == NORTH
+        || command == SOUTH) {
+            move_player(map,x,y,direction,dimensions,command);
     }
+    else if(command == SHOOT) {
+       win_condition = shooting_animation(map,dimensions,x,y,*direction);
+    }
+    else {
+        printf("Invalid command, try again.\n");
+    }
+    return win_condition;
 }
