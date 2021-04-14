@@ -7,6 +7,7 @@
 #include "boolean.h"
 #include "direction.h"
 #include "player.h"
+#include "map.h"
 
 const char* RED = "\033[0;31m";
 const char* BLUE = "\033[0;34m";
@@ -15,7 +16,6 @@ const char* DEFAULT = "\033[0m";
 static int STRING_SIZE = 20;
 
 void display_player_won() {
-    system("clear");
     printf("Congratulations, You Won!!!\n");
 }
 
@@ -39,39 +39,40 @@ int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction) 
     old_x = laser_pos_x;
     old_y = laser_pos_y;
     num_frames = get_num_frames(dimensions,*delta_x,*delta_y,laser_pos_x,laser_pos_y);
-    while(check_limit(laser_pos_x,laser_pos_y,dimensions[0],dimensions[1]) && i < num_frames && hit_enemy == FALSE) {
-        system("clear");
-        if(map[laser_pos_y][laser_pos_y] == ' ') {
-            map[laser_pos_y][laser_pos_x] = *laser_direction;
-            laser_pos_y+=*delta_x;
+    system("clear");
+    while(check_limit(laser_pos_x,laser_pos_y,dimensions[0],dimensions[1]) && i <= num_frames && hit_enemy == FALSE) {
+        if(map[laser_pos_y][laser_pos_x] != '<') {
+            update_map(map,dimensions,laser_pos_x,laser_pos_y,*laser_direction);
+            old_x = laser_pos_x;
+            old_y = laser_pos_y;
+            laser_pos_x+=*delta_x;
             laser_pos_y+=*delta_y;
+
         }
         else if(map[laser_pos_y][laser_pos_x] == '<'){
            hit_enemy = TRUE;
-           map[laser_pos_y][laser_pos_x] = 'X';
+           update_map(map,dimensions,laser_pos_x,laser_pos_y,'X');
         }
         display_map(map,dimensions[1],color);
         color = color == 1 ? 0 : 1;
-        map[old_y][old_x] = ' ';
-        old_x = laser_pos_x;
-        old_y = laser_pos_y;
+        update_map(map,dimensions,old_x,old_y,' ');
         i++;
         newSleep(1.0);
+        system("clear");
     }
     free(laser_direction);
     free(delta_x);
     free(delta_y);
-    system("clear");
     return hit_enemy;
 }
 
 int get_num_frames(int* dimensions,int delta_x ,int delta_y,int x,int y) {
     int num_frames = 0;
     if(delta_y == 1 || delta_y == -1) {
-        num_frames = delta_y > 0 ? dimensions[1] - y : y - dimensions[1];
+        num_frames = delta_y > 0 ? (dimensions[1] - y) : y;
     }
-    else {
-        num_frames = delta_x > 0 ? dimensions[0] - x : x - dimensions[0];
+    else if(delta_x == 1 || delta_x == -1){
+        num_frames = delta_x > 0 ? dimensions[0] - x : x;
     }
     return num_frames;
 }
@@ -133,6 +134,7 @@ void switch_colors(char* color,int mode) {
 
 void delta_x_y(int* delta_x, int* delta_y, char direction,char* laser_direction){
     char character_direction = get_character_direction(direction);
+    printf("Translated character direction is: %c\n", character_direction);
     if(character_direction == SHOOT) {
         *delta_x = 0;
         *delta_y = 0;
@@ -152,10 +154,13 @@ void delta_x_y(int* delta_x, int* delta_y, char direction,char* laser_direction)
         *delta_x = -1;
         *delta_y = 0;
         *laser_direction = '-';
+        printf("direction is WEST");
     }
     else if(character_direction == EAST) {
         *delta_x = 1;
         *delta_y = 0;
         *laser_direction = '-';
+        printf("direction is EAST");
     }
+    printf("Delta x and y are: %d,%d\n",*delta_x,*delta_y);
 }

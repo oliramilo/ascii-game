@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -pedantic -ansi -g
+CFLAGS = -Wall -pedantic -ansi -g -Werror
 OBJ = main.o controller.o map.o player.o viewer.o newSleep.o
 EXEC = laserTank
 

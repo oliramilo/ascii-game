@@ -18,13 +18,11 @@ int main(int argc, char** argv) {
     char** map;
     int x = 5;
     int y = 5;
-    int* player_x = 0;
-    int* player_y = 0;
+    int* player_x;
+    int* player_y;
     int p_x,p_y;
     player_direction = (char*)malloc(sizeof(char));
     dimensions = (int*)malloc(sizeof(int) * 2);
-    player_x = (int*)malloc(sizeof(int));
-    player_y = (int*)malloc(sizeof(int));
     dimensions[0] = x;
     dimensions[1] = y;
     player_x = &p_y;
@@ -35,15 +33,13 @@ int main(int argc, char** argv) {
 
     map = generate_map(x,y);
     map[*player_y][*player_x] = *player_direction;
+    update_map(map,dimensions,4,4,'<');
     game_func(map,player_x,player_y,player_direction,dimensions);
     free_map(map,y);
     free(dimensions);
-    free(player_x);
-    free(player_y);
     free(player_direction);
     return 0;
 }
-
 
 void game_func(char** map,int* player_x,int* player_y,char* direction,int* dimensions) {
     int game_won = FALSE;
@@ -68,6 +64,7 @@ int process_action(char** map,int* dimensions,int* x,int* y, char* direction) {
     if( command == WEST || command == EAST || command == NORTH
         || command == SOUTH) {
             move_player(map,x,y,direction,dimensions,command);
+            system("clear");
     }
     else if(command == SHOOT) {
         printf("Direction is %c", *direction);
