@@ -6,6 +6,7 @@
 #include "newSleep.h"
 #include "boolean.h"
 #include "direction.h"
+#include "player.h"
 
 const char* RED = "\033[0;31m";
 const char* BLUE = "\033[0;34m";
@@ -21,57 +22,58 @@ void display_player_won() {
 /**pointer integers x and y represent the player's position on the map**/
 int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction) {
     int i,num_frames,old_x,old_y,hit_enemy,color;
-    int* laser_pos_x;
-    int* laser_pos_y;
-    int* delta_x = 0;
-    int* delta_y = 0;
+    int laser_pos_x;
+    int laser_pos_y;
+    int* delta_x = (int*)malloc(sizeof(int));
+    int* delta_y = (int*)malloc(sizeof(int));
     char* laser_direction = (char*)malloc(sizeof(char));
     *laser_direction = '-';
+    *delta_x = 0;
+    *delta_y = 0;
     delta_x_y(delta_x,delta_y,direction,laser_direction);
-    laser_pos_x = *x + delta_x;
-    laser_pos_y = *y + delta_y;
+    laser_pos_x = *x + *delta_x;
+    laser_pos_y = *y + *delta_y;
     hit_enemy = FALSE;
     color = 1;
     i = 0;
-    num_frames = get_num_frames(map,direction,*laser_pos_x,*laser_pos_y);
-    while(check_bounds(*laser_pos_x,*laser_pos_y,dimensions,map) && i < num_frames && hit_enemy == FALSE) {
+    old_x = laser_pos_x;
+    old_y = laser_pos_y;
+    num_frames = get_num_frames(dimensions,*delta_x,*delta_y,laser_pos_x,laser_pos_y);
+    while(check_limit(laser_pos_x,laser_pos_y,dimensions[0],dimensions[1]) && i < num_frames && hit_enemy == FALSE) {
         system("clear");
-        if(map[*laser_pos_y][*laser_pos_y] == ' ') {
-            map[*laser_pos_y][*laser_pos_x] = *laser_direction;
-            old_x = *laser_pos_x;
-            old_y = *laser_pos_y;
-            *laser_pos_y+=*delta_x;
-            *laser_pos_y+=*delta_y;
+        if(map[laser_pos_y][laser_pos_y] == ' ') {
+            map[laser_pos_y][laser_pos_x] = *laser_direction;
+            laser_pos_y+=*delta_x;
+            laser_pos_y+=*delta_y;
         }
-        else {
+        else if(map[laser_pos_y][laser_pos_x] == '<'){
            hit_enemy = TRUE;
-           map[*laser_pos_y][*laser_pos_x] = 'X';
+           map[laser_pos_y][laser_pos_x] = 'X';
         }
         display_map(map,dimensions[1],color);
         color = color == 1 ? 0 : 1;
         map[old_y][old_x] = ' ';
-        newSleep(0.5);
+        old_x = laser_pos_x;
+        old_y = laser_pos_y;
+        i++;
+        newSleep(1.0);
     }
     free(laser_direction);
+    free(delta_x);
+    free(delta_y);
+    system("clear");
     return hit_enemy;
 }
 
-int get_num_frames(char** map, char direction,int x,int y) {
-    int i = 0;
-    int inc_x = 0;
-    int inc_y = 0;
-    if(direction == SOUTH || direction == NORTH) {
-        inc_y = y+1;
-        inc_x = x;
+int get_num_frames(int* dimensions,int delta_x ,int delta_y,int x,int y) {
+    int num_frames = 0;
+    if(delta_y == 1 || delta_y == -1) {
+        num_frames = delta_y > 0 ? dimensions[1] - y : y - dimensions[1];
     }
     else {
-        inc_y = y;
-        inc_x = x+1;
+        num_frames = delta_x > 0 ? dimensions[0] - x : x - dimensions[0];
     }
-    while(map[inc_y][inc_x] != EOF) {
-        i++;
-    }
-    return i;
+    return num_frames;
 }
 
 void display_commands() {
@@ -130,27 +132,28 @@ void switch_colors(char* color,int mode) {
 }
 
 void delta_x_y(int* delta_x, int* delta_y, char direction,char* laser_direction){
-    if(direction == SHOOT) {
+    char character_direction = get_character_direction(direction);
+    if(character_direction == SHOOT) {
         *delta_x = 0;
         *delta_y = 0;
         *laser_direction = ' ';
     }
-    else if(direction == NORTH) {
+    else if(character_direction == NORTH) {
         *delta_x = 0;
         *delta_y = -1;
         *laser_direction = '|';
     }
-    else if(direction == SOUTH) {
+    else if(character_direction == SOUTH) {
         *delta_x = 0;
         *delta_y = 1;
         *laser_direction = '|';
     }
-    else if(direction == WEST) {
+    else if(character_direction == WEST) {
         *delta_x = -1;
         *delta_y = 0;
         *laser_direction = '-';
     }
-    else if(direction == EAST) {
+    else if(character_direction == EAST) {
         *delta_x = 1;
         *delta_y = 0;
         *laser_direction = '-';

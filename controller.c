@@ -26,7 +26,13 @@ int check_bounds(int x,int y,int* dimensions,char** map){
     return bool;
 }
 
-
+int check_limit(int x,int y,int lim_x,int lim_y) {
+    int bool = FALSE;
+    if(x >= 0 && x < lim_x && y >= 0 && y < lim_y) {
+        bool = TRUE;
+    }
+    return bool;
+}
 
 int check_direction(char direction) {
     int bool = FALSE;

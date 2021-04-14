@@ -37,9 +37,10 @@ int main(int argc, char** argv) {
     map[*player_y][*player_x] = *player_direction;
     game_func(map,player_x,player_y,player_direction,dimensions);
     free_map(map,y);
-    free_player(player_x,player_y,player_direction);
     free(dimensions);
-
+    free(player_x);
+    free(player_y);
+    free(player_direction);
     return 0;
 }
 
@@ -69,6 +70,7 @@ int process_action(char** map,int* dimensions,int* x,int* y, char* direction) {
             move_player(map,x,y,direction,dimensions,command);
     }
     else if(command == SHOOT) {
+        printf("Direction is %c", *direction);
        win_condition = shooting_animation(map,dimensions,x,y,*direction);
     }
     else {

@@ -49,7 +49,7 @@ char get_character(char input) {
     return direction;
 }
 
-/**char get_character_direction(char input){
+char get_character_direction(char input){
     char direction = ' ';
     if(input == '<') {
         direction = WEST;
@@ -64,7 +64,7 @@ char get_character(char input) {
         direction = SOUTH;
     }
     return direction;
-}**/
+}
 
 void set_character_direction(char* character_direction,char input) {
     if(input == WEST) {
@@ -110,10 +110,4 @@ void update_position(char** map,int* x,int* y,int new_x,int new_y,int* dimension
     else {
         printf("Out of bounds");
     }
-}
-
-void free_player(int* x,int* y,char* direction){
-    free(x);
-    free(y);
-    free(direction);
 }
