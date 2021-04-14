@@ -48,10 +48,11 @@ void game_func(char** map,int* player_x,int* player_y,char* direction,int* dimen
     int game_won = FALSE;
     int game_loop = TRUE;
     printf("Dimensions of the map is [%d][%d]\n", dimensions[0],dimensions[1]);
+    display_map(map,dimensions[1],0);
     while(game_loop) {
-        display_map(map,dimensions[1],0);
         display_commands();
         game_won = process_action(map,dimensions,player_x,player_y,direction);
+        display_map(map,dimensions[1],0);
         if(game_won) {
             game_loop = FALSE;
         }

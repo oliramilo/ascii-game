@@ -19,8 +19,8 @@ void move_player(char** map,int* x,int* y,char* direction,int* dimensions,char n
 
 int check_bounds(int x,int y,int* dimensions,char** map){
     int bool = FALSE;
-    if( (y >= 0 && y <= dimensions[1]) &&
-        (x >= 0 && x<= dimensions[0])) {
+    if( (y >= 0 && y < dimensions[1]) &&
+        (x >= 0 && x < dimensions[0])) {
         bool = TRUE;
     }
     return bool;

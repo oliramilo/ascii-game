@@ -19,7 +19,6 @@ void change_direction(char** map,int* x,int* y,char* direction,int* dimensions ,
         delta_player(delta_x,delta_y,new_direction);
         new_pos_x = *x + *delta_x;
         new_pos_y = *y + *delta_y;
-        printf("Player input: %c, Player position: %d,%d\n",get_character(new_direction),*x,*y);
         if(check_bounds(new_pos_x,new_pos_y,dimensions,map)) {
             update_map(map,dimensions,*x,*y,' ');
             update_position(map,x,y,new_pos_x,new_pos_y,dimensions);
@@ -105,6 +104,7 @@ void update_position(char** map,int* x,int* y,int new_x,int new_y,int* dimension
     if(check_bounds(new_x,new_y,dimensions,map)) {
         *x = new_x;
         *y = new_y;
+        printf("Player position changed to: %d,%d(x,y)\n",*x,*y);
         printf("updated player position\n");
     }
     else {
