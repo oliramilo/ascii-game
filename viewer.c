@@ -41,6 +41,7 @@ int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction,c
     old_y = laser_pos_y;
     num_frames = get_num_frames(dimensions,*delta_x,*delta_y,laser_pos_x,laser_pos_y);
     system("clear");
+    /**Loop until the the frame rate count is met or we hit an enemy/player or we do not go over bounds check**/
     while(check_limit(laser_pos_x,laser_pos_y,dimensions[0],dimensions[1]) && i <= num_frames && hit_enemy == FALSE) {
         if(map[laser_pos_y][laser_pos_x] != opponent) {
             update_map(map,dimensions,laser_pos_x,laser_pos_y,*laser_direction);
@@ -50,14 +51,17 @@ int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction,c
             laser_pos_y+=*delta_y;
 
         }
+        /**When an enemy is hit, stop the game and mark the enemy position as X**/
         else if(map[laser_pos_y][laser_pos_x] == opponent){
            hit_enemy = TRUE;
            update_map(map,dimensions,laser_pos_x,laser_pos_y,'X');
         }
         display_map(map,dimensions[1],0);
+        /**Update the old position to an empty character to remove bullet tracing**/
         update_map(map,dimensions,old_x,old_y,' ');
         i++;
-        newSleep(2.0);
+        /**Delay the game by half a second do show shooting animation**/
+        newSleep(0.5);
         system("clear");
     }
     free(laser_direction);
@@ -66,6 +70,7 @@ int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction,c
     return hit_enemy;
 }
 
+/** Returns the number of frames the shooting animation**/
 int get_num_frames(int* dimensions,int delta_x ,int delta_y,int x,int y) {
     int num_frames = 0;
     if(delta_y == 1 || delta_y == -1) {
@@ -101,6 +106,8 @@ void display_map(char** map,int size_y,int mode) {
     free(wall);
 }
 
+/** Prints strings in color by the integer mode, prints whole string if mode=1 otherwise
+    print each character and check if it is a bullet which will be printed on a different character**/
 void print_colors(char* line,int mode) {
     int i;
     static int switch_colors = 1;
@@ -132,6 +139,9 @@ int has_bullet(char pos) {
     return (pos == '-' || pos == '|');
 }
 
+
+/** Evaluates the change of x,y axis and laser direction
+    when animating the shooting sequence**/
 void delta_x_y(int* delta_x, int* delta_y, char direction,char* laser_direction){
     char character_direction = get_character_direction(direction);
     if(character_direction == SHOOT) {

@@ -6,6 +6,7 @@
 #include "direction.h"
 #include "map.h"
 
+/**Change the direction of the character's face or position on the map by the given new_direction variable**/
 void change_direction(char** map,int* x,int* y,char* direction,int* dimensions ,char new_direction) {
     if(new_direction == SHOOT) {
 
@@ -32,6 +33,8 @@ void change_direction(char** map,int* x,int* y,char* direction,int* dimensions ,
     }
 }
 
+
+/**return character faces based on the given input char**/
 char get_character(char input) {
     char direction = ' ';
     if(input == WEST) {
@@ -49,6 +52,8 @@ char get_character(char input) {
     return direction;
 }
 
+
+/**Return the character direction by the input char representing the character face**/
 char get_character_direction(char input){
     char direction = ' ';
     if(input == '<') {
@@ -66,6 +71,8 @@ char get_character_direction(char input){
     return direction;
 }
 
+
+/**Set char pointer to a new character based on input char**/
 void set_character_direction(char* character_direction,char input) {
     if(input == WEST) {
         *character_direction = '<';
@@ -81,6 +88,8 @@ void set_character_direction(char* character_direction,char input) {
     }
 }
 
+/** Evaluate the new change in x and y when moving the player
+    on the game map based on the direction char**/
 void delta_player(int* delta_x, int* delta_y, char direction){
     if(direction == NORTH) {
         *delta_x = 0;
@@ -100,6 +109,9 @@ void delta_player(int* delta_x, int* delta_y, char direction){
     }
 }
 
+
+/** Modifies the value of the character posiiton on the game map,
+    bounds checks are done before modification**/
 void update_position(char** map,int* x,int* y,int new_x,int new_y,int* dimensions) {
     if(check_bounds(new_x,new_y,dimensions,map)) {
         *x = new_x;
