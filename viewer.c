@@ -89,7 +89,7 @@ void display_map(char** map,int size_y,int mode) {
     int i;
     char* wall = (char*)malloc(sizeof(char) * (size_y + 2));
 
-    memset(wall,'*',size_y + 2);
+    memset(wall,'*',strlen(map[0])+ 2);
     printf("%s\n",wall);
     for(i=0;i<size_y;i++) {
         printf("*");

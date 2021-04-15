@@ -31,6 +31,8 @@ int main(int argc, char** argv) {
     int e_x, e_y;
     int size_x,size_y;
     char p_dir,e_dir;
+    /** Evaluate command line arguments and convert to game values
+        such as map width/height and player positioning etc...**/
     if(argc == 9) {
         size_x = atoi(argv[1]);
         size_y = atoi(argv[2]);
@@ -42,12 +44,15 @@ int main(int argc, char** argv) {
         e_dir = argv[8][0];
         p_dir = p_dir >=97 && p_dir <= 122 ? p_dir - 32 : p_dir;
         e_dir = e_dir >= 97 && e_dir <= 122 ? e_dir - 32 : e_dir;
+    /** Check if the command line arguments are valid and
+        width/height are within the range of valid vaues**/
     if( (p_x != e_x && p_y != e_y) &&
         (size_x >= 5 && size_y >= 5) &&
         (size_x <= 25 && size_y <= 25) &&
         check_dir(p_dir) && check_dir(e_dir) &&
         check_limit(p_x,p_y,size_x,size_y) &&
         check_limit(e_x,e_y,size_x,size_y)) {
+            /**ALlocate memory for map, player's x,y positions and enemy information**/
             player_direction = (char*)malloc(sizeof(char));
             dimensions = (int*)malloc(sizeof(int) * 2);
             enemy_pos = (int*)malloc(sizeof(int) * 2);
@@ -57,10 +62,13 @@ int main(int argc, char** argv) {
             dimensions[1] = size_y;
             player_x = &p_y;
             player_y = &p_x;
+            /**turns command line value of the character to face of the character on the map **/
             *player_direction = translate_dir(p_dir);
             map = generate_map(size_x,size_y);
+            /**Place the player into the map at the beginning**/
             map[*player_y][*player_x] = *player_direction;
             e_dir = translate_dir(e_dir);
+            /**Place the enemy into the map at the beginning**/
             update_map(map,dimensions,e_x,e_y,e_dir);
             game_func(map,player_x,player_y,player_direction,dimensions,enemy_pos,e_dir);
             free_map(map,size_y);
@@ -78,6 +86,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+/**Game function that starts the game**/
 void game_func(char** map,int* player_x,int* player_y,char* direction,int* dimensions,int* enemy_pos,char enemy) {
     int game_won = FALSE;
     int game_loop = TRUE;
@@ -92,6 +101,8 @@ void game_func(char** map,int* player_x,int* player_y,char* direction,int* dimen
     }
 }
 
+/** Evaluates player's input to either move or shoot,
+    calls shoot animation or update player position on player input**/
 int process_action(char** map,int* dimensions,int* x,int* y, char* direction,int* enemy_pos,char enemy) {
     int win_condition = FALSE;
     char command = get_player_input();
@@ -153,6 +164,7 @@ int is_player_on_enemy_direction(char enemy_direction, int e_x,int e_y, int p_x,
     return is_facing;
 }
 
+/**Checks if player inputs are valid or not, returns boolean TRUE/FALSE**/
 static int check_dir(char dir) {
     int bool = FALSE;
     if(dir == UP || dir == DOWN  || dir == LEFT || dir == RIGHT) {
@@ -161,6 +173,8 @@ static int check_dir(char dir) {
     return bool;
 }
 
+
+/**returns characters of player/enemy back to commands**/
 static char translate_dir(char dir) {
     char object_direction = '<';
     if(dir == UP) {
