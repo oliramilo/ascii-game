@@ -9,9 +9,7 @@
 #include "player.h"
 #include "map.h"
 
-const char* RED = "\033[0;31m";
-const char* BLUE = "\033[0;34m";
-const char* DEFAULT = "\033[0m";
+
 
 static int STRING_SIZE = 20;
 
@@ -21,7 +19,7 @@ void display_player_won() {
 
 /**pointer integers x and y represent the player's position on the map**/
 int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction) {
-    int i,num_frames,old_x,old_y,hit_enemy,color;
+    int i,num_frames,old_x,old_y,hit_enemy;
     int laser_pos_x;
     int laser_pos_y;
     int* delta_x = (int*)malloc(sizeof(int));
@@ -34,7 +32,6 @@ int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction) 
     laser_pos_x = *x + *delta_x;
     laser_pos_y = *y + *delta_y;
     hit_enemy = FALSE;
-    color = 1;
     i = 0;
     old_x = laser_pos_x;
     old_y = laser_pos_y;
@@ -53,8 +50,7 @@ int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction) 
            hit_enemy = TRUE;
            update_map(map,dimensions,laser_pos_x,laser_pos_y,'X');
         }
-        display_map(map,dimensions[1],color);
-        color = color == 1 ? 0 : 1;
+        display_map(map,dimensions[1],0);
         update_map(map,dimensions,old_x,old_y,' ');
         i++;
         newSleep(1.0);
@@ -103,33 +99,33 @@ void display_map(char** map,int size_y,int mode) {
 
 void print_colors(char* line,int mode) {
     int i;
+    static int switch_colors = 1;
     char* color = (char*)malloc(sizeof(char) * STRING_SIZE);
-    switch_colors(color, 0);
-    for(i=0;i<sizeof(line);i++) {
-        if(has_bullet(line[i])) {
-            switch_colors(color,mode);
+    if (mode == 1) {
+        printf("%s",line);
+    }
+    else {
+        for(i=0;i<strlen(line);i++) {
+            if(has_bullet(line[i])) {
+                if(switch_colors == 1) {
+                    PRINT_COLOR(line[i],RED);
+                    switch_colors = 0;
+                }
+                else {
+                    PRINT_COLOR(line[i],BLUE);
+                    switch_colors = 1;
+                }
+            }
+            else {
+                printf("%c", line[i]);
+            }
         }
-        printf("%s", color);
-        printf("%c",line[i]);
-        switch_colors(color,0);
-        printf("%s", color);
     }
     free(color);
 }
 
 int has_bullet(char pos) {
-    return pos == '-' || pos == '|' ? TRUE : FALSE;
-}
-
-void switch_colors(char* color,int mode) {
-    switch(mode) {
-        case 1:
-            strcpy(color,RED);
-        case 2:
-            strcpy(color,BLUE);
-        case 0:
-            strcpy(color,DEFAULT);
-    }
+    return (pos == '-' || pos == '|');
 }
 
 void delta_x_y(int* delta_x, int* delta_y, char direction,char* laser_direction){

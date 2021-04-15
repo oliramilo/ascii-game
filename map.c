@@ -12,7 +12,7 @@ void update_map(char** map,int* dimensions,int new_x,int new_y,char direction) {
 
 char** generate_map(int size_x,int size_y) {
     int i;
-    char** map = (char**)malloc(sizeof(char*) * size_x);
+    char** map = (char**)malloc(sizeof(char*) * size_y);
     for(i=0;i<size_y;i++) {
         char* line = (char*)malloc(sizeof(char)* size_x);
         memset(line,' ',size_x);
