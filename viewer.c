@@ -17,8 +17,12 @@ void display_player_won() {
     printf("Congratulations, You Won!!!\n");
 }
 
+
+void display_player_lost() {
+    printf("Congratulations, You lost dumbass!!!\n");
+}
 /**pointer integers x and y represent the player's position on the map**/
-int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction) {
+int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction,char opponent) {
     int i,num_frames,old_x,old_y,hit_enemy;
     int laser_pos_x;
     int laser_pos_y;
@@ -38,7 +42,7 @@ int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction) 
     num_frames = get_num_frames(dimensions,*delta_x,*delta_y,laser_pos_x,laser_pos_y);
     system("clear");
     while(check_limit(laser_pos_x,laser_pos_y,dimensions[0],dimensions[1]) && i <= num_frames && hit_enemy == FALSE) {
-        if(map[laser_pos_y][laser_pos_x] != '<') {
+        if(map[laser_pos_y][laser_pos_x] != opponent) {
             update_map(map,dimensions,laser_pos_x,laser_pos_y,*laser_direction);
             old_x = laser_pos_x;
             old_y = laser_pos_y;
@@ -46,14 +50,14 @@ int shooting_animation(char** map,int* dimensions,int* x,int* y,char direction) 
             laser_pos_y+=*delta_y;
 
         }
-        else if(map[laser_pos_y][laser_pos_x] == '<'){
+        else if(map[laser_pos_y][laser_pos_x] == opponent){
            hit_enemy = TRUE;
            update_map(map,dimensions,laser_pos_x,laser_pos_y,'X');
         }
         display_map(map,dimensions[1],0);
         update_map(map,dimensions,old_x,old_y,' ');
         i++;
-        newSleep(1.0);
+        newSleep(2.0);
         system("clear");
     }
     free(laser_direction);
@@ -130,7 +134,6 @@ int has_bullet(char pos) {
 
 void delta_x_y(int* delta_x, int* delta_y, char direction,char* laser_direction){
     char character_direction = get_character_direction(direction);
-    printf("Translated character direction is: %c\n", character_direction);
     if(character_direction == SHOOT) {
         *delta_x = 0;
         *delta_y = 0;
@@ -150,13 +153,10 @@ void delta_x_y(int* delta_x, int* delta_y, char direction,char* laser_direction)
         *delta_x = -1;
         *delta_y = 0;
         *laser_direction = '-';
-        printf("direction is WEST");
     }
     else if(character_direction == EAST) {
         *delta_x = 1;
         *delta_y = 0;
         *laser_direction = '-';
-        printf("direction is EAST");
     }
-    printf("Delta x and y are: %d,%d\n",*delta_x,*delta_y);
 }

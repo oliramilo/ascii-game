@@ -104,8 +104,6 @@ void update_position(char** map,int* x,int* y,int new_x,int new_y,int* dimension
     if(check_bounds(new_x,new_y,dimensions,map)) {
         *x = new_x;
         *y = new_y;
-        printf("Player position changed to: %d,%d(x,y)\n",*x,*y);
-        printf("updated player position\n");
     }
     else {
         printf("Out of bounds");

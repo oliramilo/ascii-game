@@ -14,8 +14,9 @@ const char DOWN = 'D';
 const char LEFT = 'L';
 const char RIGHT = 'R';
 
-void game_func(char**,int*,int*,char*,int*);
-int process_action(char**,int*,int*,int*,char*);
+void game_func(char**,int*,int*,char*,int*,int*,char);
+int process_action(char**,int*,int*,int*,char*,int*,char);
+int is_player_on_enemy_direction(char,int,int,int,int);
 static int check_dir(char);
 static char translate_dir(char);
 int main(int argc, char** argv) {
@@ -25,6 +26,7 @@ int main(int argc, char** argv) {
     /*Pointer to player x and y position in the game map*/
     int* player_x;
     int* player_y;
+    int* enemy_pos;
     int p_x,p_y;
     int e_x, e_y;
     int size_x,size_y;
@@ -48,6 +50,9 @@ int main(int argc, char** argv) {
         check_limit(e_x,e_y,size_x,size_y)) {
             player_direction = (char*)malloc(sizeof(char));
             dimensions = (int*)malloc(sizeof(int) * 2);
+            enemy_pos = (int*)malloc(sizeof(int) * 2);
+            enemy_pos[0] = e_x;
+            enemy_pos[1] = e_y;
             dimensions[0] = size_x;
             dimensions[1] = size_y;
             player_x = &p_y;
@@ -55,11 +60,13 @@ int main(int argc, char** argv) {
             *player_direction = translate_dir(p_dir);
             map = generate_map(size_x,size_y);
             map[*player_y][*player_x] = *player_direction;
-            update_map(map,dimensions,e_x,e_y,translate_dir(e_dir));
-            game_func(map,player_x,player_y,player_direction,dimensions);
+            e_dir = translate_dir(e_dir);
+            update_map(map,dimensions,e_x,e_y,e_dir);
+            game_func(map,player_x,player_y,player_direction,dimensions,enemy_pos,e_dir);
             free_map(map,size_y);
             free(dimensions);
             free(player_direction);
+            free(enemy_pos);
         }
         else {
             printf("Invalid settings provided\n");
@@ -71,14 +78,13 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void game_func(char** map,int* player_x,int* player_y,char* direction,int* dimensions) {
+void game_func(char** map,int* player_x,int* player_y,char* direction,int* dimensions,int* enemy_pos,char enemy) {
     int game_won = FALSE;
     int game_loop = TRUE;
-    printf("Dimensions of the map is [%d][%d]\n", dimensions[0],dimensions[1]);
     display_map(map,dimensions[1],0);
     while(game_loop) {
         display_commands();
-        game_won = process_action(map,dimensions,player_x,player_y,direction);
+        game_won = process_action(map,dimensions,player_x,player_y,direction,enemy_pos,enemy);
         display_map(map,dimensions[1],1);
         if(game_won) {
             game_loop = FALSE;
@@ -86,18 +92,32 @@ void game_func(char** map,int* player_x,int* player_y,char* direction,int* dimen
     }
 }
 
-int process_action(char** map,int* dimensions,int* x,int* y, char* direction) {
+int process_action(char** map,int* dimensions,int* x,int* y, char* direction,int* enemy_pos,char enemy) {
     int win_condition = FALSE;
     char command = get_player_input();
+    int* e_x;
+    int* e_y;
     command = (command >= 97 && command <= 122) ? command - 32 : command;
     newSleep(0.5);
     if( command == WEST || command == EAST || command == NORTH
         || command == SOUTH) {
+            e_x = &enemy_pos[0];
+            e_y = &enemy_pos[1];
+            printf("Enemy position is: %d,%d\n\n",*e_x,*e_y);
             move_player(map,x,y,direction,dimensions,command);
-            system("clear");
+            if(is_player_on_enemy_direction(enemy,enemy_pos[0],enemy_pos[1],*x,*y)) {
+                win_condition = shooting_animation(map,dimensions,e_x,e_y,enemy,*direction);
+                if(win_condition == TRUE) {
+                    display_player_lost();
+                }
+            }
+
     }
     else if(command == SHOOT) {
-       win_condition = shooting_animation(map,dimensions,x,y,*direction);
+       win_condition = shooting_animation(map,dimensions,x,y,*direction,enemy);
+       if(win_condition == TRUE) {
+            display_player_won();
+       }
     }
     else {
         printf("Invalid command, try again.\n");
@@ -105,7 +125,33 @@ int process_action(char** map,int* dimensions,int* x,int* y, char* direction) {
     return win_condition;
 }
 
+/** After the player moves to another tile on the map, check if the enemy
+    is facing the player**/
+int is_player_on_enemy_direction(char enemy_direction, int e_x,int e_y, int p_x,int p_y) {
+    int is_facing = FALSE;
+    if(enemy_direction == '<') {
+        if(e_y == p_y && p_x < e_x) {
 
+            is_facing = TRUE;
+        }
+    }
+    else if(enemy_direction == '>') {
+        if(e_y == p_y && p_x > e_x) {
+            is_facing = TRUE;
+        }
+    }
+    else if(enemy_direction == 'v') {
+        if(e_y < p_y && p_x == e_x) {
+            is_facing = TRUE;
+        }
+    }
+    else if(enemy_direction == '^') {
+        if(e_y > p_y && p_x == e_x) {
+            is_facing = TRUE;
+        }
+    }
+    return is_facing;
+}
 
 static int check_dir(char dir) {
     int bool = FALSE;
